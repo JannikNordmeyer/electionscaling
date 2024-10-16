@@ -29,17 +29,19 @@
 
 )
 
-(def vote-scale (ordinal-scale #{"Stimme nicht zu" "Neutral" "Stimme zu"} 
-                               #(or (= %2 %1) 
-                                    (.contains #{["Stimme nicht zu" "Neutral"] ["Stimme nicht zu" "Stimme zu"]
-                                                 ["Neutral" "Stimme zu"]}
-                                               [%2 %1]))))
+(def nominal-vote-scale (nominal-scale #{"Stimme nicht zu" "Neutral" "Stimme zu"}))
+
+(def ordinal-vote-scale (ordinal-scale #{"Stimme nicht zu" "Neutral" "Stimme zu"} 
+                                       #(or (= %2 %1) 
+                                            (.contains #{["Stimme nicht zu" "Neutral"] ["Stimme nicht zu" "Stimme zu"]
+                                                         ["Neutral" "Stimme zu"]}
+                                                       [%2 %1]))))
 
 (defn- list-dir [path]
   (map #(.getCanonicalPath %) (.listFiles (java.io.File. path)))
 )
 
-(defn save-scaled-context [path]
+(defn save-scaled-context [path vote-scale]
 
   (let [answers-json (json/read-str (slurp (str path "/answer.json")))
         party-json (json/read-str (slurp (str path  "/party.json")))
@@ -65,17 +67,17 @@
                                                ".ctx")))
 )
 
-(defn convert-all [] 
+(defn convert-all [vote-scale] 
   (let [path "qual-o-mat-data/data"
         years (list-dir path)
         elections (flatten (for [year years] (list-dir year)))]
-    (doall (map #(save-scaled-context %) elections)))
+    (doall (map #(save-scaled-context % vote-scale) elections)))
 )
 
 
 
 (defn -main [& args]
   (try 
-    (convert-all)
+    (convert-all nominal-vote-scale)
     (catch Exception e (println (str "caught exception: " (.getMessage e))))))
 
