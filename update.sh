@@ -8,7 +8,19 @@ git pull https://github.com/gockelhahn/qual-o-mat-data.git || { echo An error ha
 sudo mkdir -p scaled
 
 cd ..
-java -jar builds/uberjar/electionscaling-0.1.0-standalone.jar
+
+while :
+do
+  echo "Enter scaling type (nominal / ordinal). Enter \"exit\" to abort:"
+  read scaletype
+  if [ $scaletype == "nominal" ] || [ $scaletype == "ordinal" ]; then
+    { java -jar builds/uberjar/electionscaling-0.1.0-standalone.jar $scaletype; break; }
+  elif [ $scaletype == "exit" ]; then
+    break
+  else
+    echo Invalid scale type.
+  fi
+done
 
 cd qual-o-mat-data
 git checkout master
