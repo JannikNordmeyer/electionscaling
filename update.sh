@@ -5,7 +5,7 @@ fi
 cd qual-o-mat-data
 git checkout -b temp
 git pull https://github.com/gockelhahn/qual-o-mat-data.git || { echo An error has occured while updating the Repository.; git checkout master; git branch --delete temp; exit 1; }
-sudo mkdir -p scaled
+sudo mkdir -p -m=rwx  scaled
 
 cd ..
 
