@@ -41,9 +41,11 @@
   (map #(.getCanonicalPath %) (.listFiles (java.io.File. path)))
 )
 
-(defn save-scaled-context [path vote-scale]
+(defn save-scaled-context [path scale-type]
 
-  (let [answers-json (json/read-str (slurp (str path "/answer.json")))
+  (let [vote-scale (if (= scale-type "nominal") nominal-vote-scale ordinal-vote-scale)
+
+        answers-json (json/read-str (slurp (str path "/answer.json")))
         party-json (json/read-str (slurp (str path  "/party.json")))
         statement-json (json/read-str (slurp (str path "/statement.json")))
         opinion-json (json/read-str (slurp (str path "/opinion.json")))
@@ -59,25 +61,27 @@
         scaled-ctx (scale-mv-context mv-ctx (into {} (for [x (attributes mv-ctx)] [x vote-scale])))
         name (take-last 2 (clojure.string/split path #"/"))]
 
-    (println name)
     (write-context :burmeister scaled-ctx (str "qual-o-mat-data/scaled/"
                                                (first name) 
                                                "_" 
                                                (second name) 
+                                               "_"
+                                               scale-type
                                                ".ctx")))
 )
 
-(defn convert-all [vote-scale] 
+(defn convert-all [scale-type] 
   (let [path "qual-o-mat-data/data"
         years (list-dir path)
         elections (flatten (for [year years] (list-dir year)))]
-    (doall (map #(save-scaled-context % vote-scale) elections)))
+    (doall (map #(save-scaled-context % scale-type) elections)))
 )
 
 
 
 (defn -main [& args]
-  (try 
-    (convert-all nominal-vote-scale)
-    (catch Exception e (println (str "caught exception: " (.getMessage e))))))
+  (let [scale-type (first args)]
+    (try 
+      (convert-all scale-type)
+      (catch Exception e (println (str "caught exception: " (.getMessage e)))))))
 
