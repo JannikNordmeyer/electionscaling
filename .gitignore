@@ -1,3 +1,4 @@
 scaled-data
-jar/
-uberjar/
+/builds/jar/
+/builds/uberjar
+
