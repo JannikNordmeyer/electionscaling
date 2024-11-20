@@ -61,7 +61,7 @@
         scaled-ctx (scale-mv-context mv-ctx (into {} (for [x (attributes mv-ctx)] [x vote-scale])))
         name (take-last 2 (clojure.string/split path #"/"))]
 
-    (write-context :burmeister scaled-ctx (str "qual-o-mat-data/scaled/"
+    (write-context :burmeister scaled-ctx (str "scaled-data/"
                                                (first name) 
                                                "_" 
                                                (second name) 
